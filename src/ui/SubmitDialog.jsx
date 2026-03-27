@@ -41,6 +41,7 @@ export function SubmitDialog({ open, onClose }) {
     const url = String(fd.get('url') ?? '').trim();
     const kind = String(fd.get('kind') ?? 'group');
     const description = String(fd.get('description') ?? '').trim();
+    const isAdultOnly = fd.get('adult') === 'on';
 
     if (!title || !url) return;
     if (kind !== 'group' && kind !== 'channel') return;
@@ -55,7 +56,7 @@ export function SubmitDialog({ open, onClose }) {
         name: title,
         description: description || title,
         category: 'General',
-        isAdultOnly: false,
+        isAdultOnly,
         type: kind,
         link: url,
         country: 'Global',
@@ -148,6 +149,15 @@ export function SubmitDialog({ open, onClose }) {
                 maxLength={140}
                 autoComplete="off"
               />
+            </label>
+
+            <label className="flex items-center gap-3 rounded-xl border border-(--tg-border) bg-(--tg-surface) px-3 py-3">
+              <input
+                className="h-4 w-4 accent-(--tg-primary)"
+                name="adult"
+                type="checkbox"
+              />
+              <span className="text-sm text-(--tg-text)">18+ content</span>
             </label>
 
             <div className="flex flex-wrap items-center gap-3">

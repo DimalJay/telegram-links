@@ -192,12 +192,14 @@ export function toUiItem(apiItem, { trendingIds } = {}) {
   const kind = apiItem?.type === 'group' || apiItem?.type === 'channel' ? apiItem.type : 'group';
   const rawLogoUrl = typeof apiItem?.logoUrl === 'string' ? apiItem.logoUrl : '';
   const logoUrl = rawLogoUrl ? `${API_BASE_URL}${rawLogoUrl.startsWith('/') ? '' : '/'}${rawLogoUrl}` : undefined;
+  const adult = Boolean(apiItem?.isAdultOnly ?? apiItem?.isAdult ?? apiItem?.adult ?? apiItem?.adultOnly);
   return {
     id,
     title: String(apiItem?.name ?? ''),
     url: String(apiItem?.link ?? ''),
     kind,
     trending: Boolean(trendingIds?.has?.(id)),
+    adult,
     description: apiItem?.description ? String(apiItem.description) : undefined,
     createdAt: apiItem?.createdAt ? String(apiItem.createdAt) : undefined,
     hasLogo: Boolean(apiItem?.hasLogo),
