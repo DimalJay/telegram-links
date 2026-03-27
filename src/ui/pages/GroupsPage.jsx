@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Panel } from '../components/Panel.jsx';
 import { LinkCard } from '../components/LinkCard.jsx';
 import { SkeletonCard } from '../components/SkeletonCard.jsx';
+import { Pagination } from '../components/Pagination.jsx';
 import { useLinks } from '../hooks/useLinks.js';
 
 function useQuery() {
@@ -10,34 +11,28 @@ function useQuery() {
   return ctx?.query ?? '';
 }
 
-function sortLatest(items) {
-  return [...items].sort((a, b) => {
-    const at = Date.parse(String(a?.createdAt ?? ''));
-    const bt = Date.parse(String(b?.createdAt ?? ''));
-    return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
-  });
-}
-
-function sortBest(items) {
-  return [...items].sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? '')));
-}
-
 export function GroupsPage() {
   const query = useQuery();
-  const { items: links, loading } = useLinks({ type: 'group', query });
-
   const [tab, setTab] = React.useState('trending');
 
-  const items =
-    tab === 'trending'
-      ? links.filter((x) => x.trending)
-      : tab === 'latest'
-        ? sortLatest(links)
-        : sortBest(links);
+  const q = String(query ?? '').trim();
+  const effectiveFilter = q ? undefined : tab;
+
+  const [page, setPage] = React.useState(1);
+  React.useEffect(() => setPage(1), [tab, q]);
+
+  const limit = 10;
+  const { items, loading, page: pageCurrent, totalPages } = useLinks({
+    type: 'group',
+    query: q,
+    filter: effectiveFilter,
+    page,
+    limit,
+  });
 
   const title = tab === 'trending' ? 'Trending Groups' : tab === 'latest' ? 'Latest Groups' : 'Hot Groups';
 
-  const placeholders = React.useMemo(() => Array.from({ length: 6 }, (_, i) => i), []);
+  const placeholders = React.useMemo(() => Array.from({ length: limit }, (_, i) => i), [limit]);
 
   return (
     <section className="py-6">
@@ -101,6 +96,8 @@ export function GroupsPage() {
               <p className="text-sm text-(--tg-muted)">No links yet.</p>
             )}
           </div>
+
+          <Pagination page={pageCurrent} totalPages={totalPages} onPageChange={setPage} disabled={loading} />
         </Panel>
       </div>
     </section>

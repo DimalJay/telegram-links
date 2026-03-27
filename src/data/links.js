@@ -36,6 +36,39 @@ function isPaginatedResponse(body) {
   );
 }
 
+function withPagination(path, { page, limit }) {
+  const sp = new URLSearchParams();
+  sp.set('page', String(page));
+  sp.set('limit', String(limit));
+  const separator = path.includes('?') ? '&' : '?';
+  return `${path}${separator}${sp.toString()}`;
+}
+
+export async function apiGetPaginated(path, { page = 1, limit = 12, signal } = {}) {
+  const data = await apiGet(withPagination(path, { page, limit }), { signal });
+
+  if (isPaginatedResponse(data)) {
+    return {
+      items: Array.isArray(data.items) ? data.items : [],
+      page: data.page,
+      totalPages: data.totalPages,
+      totalItems: typeof data.totalItems === 'number' ? data.totalItems : undefined,
+    };
+  }
+
+  // Fallback: treat an array response as a single page.
+  if (Array.isArray(data)) {
+    return {
+      items: data,
+      page: 1,
+      totalPages: 1,
+      totalItems: data.length,
+    };
+  }
+
+  return { items: [], page: 1, totalPages: 1, totalItems: 0 };
+}
+
 async function apiGetAllPages(path, { signal, limit = 100 } = {}) {
   const items = [];
   let page = 1;
@@ -89,9 +122,17 @@ export async function listGroups({ signal } = {}) {
   return Array.isArray(items) ? items : [];
 }
 
+export async function listGroupsPage({ page = 1, limit = 12, signal } = {}) {
+  return apiGetPaginated('/api/groups', { page, limit, signal });
+}
+
 export async function listChannels({ signal } = {}) {
   const items = await apiGetAllPages('/api/channels', { signal });
   return Array.isArray(items) ? items : [];
+}
+
+export async function listChannelsPage({ page = 1, limit = 12, signal } = {}) {
+  return apiGetPaginated('/api/channels', { page, limit, signal });
 }
 
 export async function listTrendingGroups({ filter, page = 1, limit = 10, signal } = {}) {
@@ -103,6 +144,12 @@ export async function listTrendingGroups({ filter, page = 1, limit = 10, signal 
   return Array.isArray(data?.items) ? data.items : [];
 }
 
+export async function listTrendingGroupsPage({ filter, page = 1, limit = 12, signal } = {}) {
+  const sp = new URLSearchParams();
+  if (filter === 'trending' || filter === 'latest' || filter === 'hot') sp.set('filter', filter);
+  return apiGetPaginated(`/api/trending/groups?${sp.toString()}`, { page, limit, signal });
+}
+
 export async function listTrendingChannels({ filter, page = 1, limit = 10, signal } = {}) {
   const sp = new URLSearchParams();
   if (filter === 'trending' || filter === 'latest' || filter === 'hot') sp.set('filter', filter);
@@ -112,6 +159,12 @@ export async function listTrendingChannels({ filter, page = 1, limit = 10, signa
   return Array.isArray(data?.items) ? data.items : [];
 }
 
+export async function listTrendingChannelsPage({ filter, page = 1, limit = 12, signal } = {}) {
+  const sp = new URLSearchParams();
+  if (filter === 'trending' || filter === 'latest' || filter === 'hot') sp.set('filter', filter);
+  return apiGetPaginated(`/api/trending/channels?${sp.toString()}`, { page, limit, signal });
+}
+
 export async function searchLinks({ query, type, signal } = {}) {
   const q = String(query ?? '').trim();
   const sp = new URLSearchParams();
@@ -119,6 +172,14 @@ export async function searchLinks({ query, type, signal } = {}) {
   if (type === 'group' || type === 'channel') sp.set('type', type);
   const items = await apiGetAllPages(`/api/search?${sp.toString()}`, { signal });
   return Array.isArray(items) ? items : [];
+}
+
+export async function searchLinksPage({ query, type, page = 1, limit = 12, signal } = {}) {
+  const q = String(query ?? '').trim();
+  const sp = new URLSearchParams();
+  sp.set('query', q);
+  if (type === 'group' || type === 'channel') sp.set('type', type);
+  return apiGetPaginated(`/api/search?${sp.toString()}`, { page, limit, signal });
 }
 
 export async function createLink(input, { signal } = {}) {

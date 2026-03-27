@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Panel } from '../components/Panel.jsx';
 import { LinkCard } from '../components/LinkCard.jsx';
 import { SkeletonCard } from '../components/SkeletonCard.jsx';
+import { Pagination } from '../components/Pagination.jsx';
 import { useLinks } from '../hooks/useLinks.js';
 
 function useQuery() {
@@ -10,45 +11,43 @@ function useQuery() {
   return ctx?.query ?? '';
 }
 
-function sortLatest(items) {
-  return [...items].sort((a, b) => {
-    const at = Date.parse(String(a?.createdAt ?? ''));
-    const bt = Date.parse(String(b?.createdAt ?? ''));
-    return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
-  });
-}
-
-function sortBest(items) {
-  return [...items].sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? '')));
-}
-
 export function HomePage() {
   const query = useQuery();
-  const { items: links, loading } = useLinks({ query });
-
   const [tab, setTab] = React.useState('trending');
 
-  const allGroups = links.filter((x) => x.kind === 'group');
-  const allChannels = links.filter((x) => x.kind === 'channel');
+  const q = String(query ?? '').trim();
+  const effectiveFilter = q ? undefined : tab;
 
-  const groups =
-    tab === 'trending'
-      ? allGroups.filter((x) => x.trending)
-      : tab === 'latest'
-        ? sortLatest(allGroups)
-        : sortBest(allGroups);
+  const [groupsPage, setGroupsPage] = React.useState(1);
+  const [channelsPage, setChannelsPage] = React.useState(1);
 
-  const channels =
-    tab === 'trending'
-      ? allChannels.filter((x) => x.trending)
-      : tab === 'latest'
-        ? sortLatest(allChannels)
-        : sortBest(allChannels);
+  React.useEffect(() => {
+    setGroupsPage(1);
+    setChannelsPage(1);
+  }, [tab, q]);
+
+  const groupsLimit = 6;
+  const channelsLimit = 6;
+
+  const {
+    items: groups,
+    loading: groupsLoading,
+    page: groupsPageCurrent,
+    totalPages: groupsTotalPages,
+  } = useLinks({ type: 'group', query: q, filter: effectiveFilter, page: groupsPage, limit: groupsLimit });
+
+  const {
+    items: channels,
+    loading: channelsLoading,
+    page: channelsPageCurrent,
+    totalPages: channelsTotalPages,
+  } = useLinks({ type: 'channel', query: q, filter: effectiveFilter, page: channelsPage, limit: channelsLimit });
 
   const groupsTitle = tab === 'trending' ? 'Trending Groups' : tab === 'latest' ? 'Latest Groups' : 'Hot Groups';
   const channelsTitle = tab === 'trending' ? 'Trending Channels' : tab === 'latest' ? 'Latest Channels' : 'Hot Channels';
 
-  const placeholders = React.useMemo(() => Array.from({ length: 6 }, (_, i) => i), []);
+  const groupPlaceholders = React.useMemo(() => Array.from({ length: groupsLimit }, (_, i) => i), [groupsLimit]);
+  const channelPlaceholders = React.useMemo(() => Array.from({ length: channelsLimit }, (_, i) => i), [channelsLimit]);
 
   return (
     <section className="py-6">
@@ -105,26 +104,40 @@ export function HomePage() {
         <div className="grid gap-4">
           <Panel title={groupsTitle}>
             <div className="grid gap-3 sm:grid-cols-3" role="list">
-              {loading ? (
-                placeholders.map((i) => <SkeletonCard key={`g-skel-${i}`} />)
+              {groupsLoading ? (
+                groupPlaceholders.map((i) => <SkeletonCard key={`g-skel-${i}`} />)
               ) : groups.length ? (
                 groups.map((x) => <LinkCard key={x.id} item={x} />)
               ) : (
                 <p className="text-sm text-(--tg-muted)">No links yet.</p>
               )}
             </div>
+
+            <Pagination
+              page={groupsPageCurrent}
+              totalPages={groupsTotalPages}
+              onPageChange={setGroupsPage}
+              disabled={groupsLoading}
+            />
           </Panel>
 
           <Panel title={channelsTitle}>
             <div className="grid gap-3 sm:grid-cols-3" role="list">
-              {loading ? (
-                placeholders.map((i) => <SkeletonCard key={`c-skel-${i}`} />)
+              {channelsLoading ? (
+                channelPlaceholders.map((i) => <SkeletonCard key={`c-skel-${i}`} />)
               ) : channels.length ? (
                 channels.map((x) => <LinkCard key={x.id} item={x} />)
               ) : (
                 <p className="text-sm text-(--tg-muted)">No links yet.</p>
               )}
             </div>
+
+            <Pagination
+              page={channelsPageCurrent}
+              totalPages={channelsTotalPages}
+              onPageChange={setChannelsPage}
+              disabled={channelsLoading}
+            />
           </Panel>
         </div>
       </div>

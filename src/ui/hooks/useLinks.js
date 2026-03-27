@@ -1,19 +1,25 @@
 import React from 'react';
 import {
-  listChannels,
-  listGroups,
   listTrendingChannels,
   listTrendingGroups,
-  searchLinks,
+  listTrendingChannelsPage,
+  listTrendingGroupsPage,
+  listChannelsPage,
+  listGroupsPage,
+  searchLinksPage,
   toUiItem,
 } from '../../data/links.js';
 
 export function useLinks(options) {
   const type = options?.type;
   const query = options?.query;
+  const filter = options?.filter;
+  const page = Number(options?.page ?? 1) || 1;
+  const limit = Number(options?.limit ?? 12) || 12;
 
   const [links, setLinks] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [meta, setMeta] = React.useState({ page: 1, totalPages: 1, totalItems: undefined });
   const [refreshToken, setRefreshToken] = React.useState(0);
 
   React.useEffect(() => {
@@ -44,24 +50,37 @@ export function useLinks(options) {
           ...trendingChannels.map((x) => String(x.id)),
         ]);
 
-        let items;
-        if (q) {
-          items = await searchLinks({ query: q, type, signal: controller.signal });
-        } else if (type === 'group') {
-          items = await listGroups({ signal: controller.signal });
-        } else if (type === 'channel') {
-          items = await listChannels({ signal: controller.signal });
-        } else {
-          const [groups, channels] = await Promise.all([
-            listGroups({ signal: controller.signal }),
-            listChannels({ signal: controller.signal }),
-          ]);
-          items = [...groups, ...channels];
+        if (type !== 'group' && type !== 'channel') {
+          throw new Error('useLinks now requires type="group" or type="channel" for paginated lists');
         }
 
-        const ui = items.map((x) => toUiItem(x, { trendingIds }));
+        let paged;
+        if (q) {
+          paged = await searchLinksPage({ query: q, type, page, limit, signal: controller.signal });
+        } else if (filter === 'trending' || filter === 'latest' || filter === 'hot') {
+          paged =
+            type === 'group'
+              ? await listTrendingGroupsPage({ filter, page, limit, signal: controller.signal })
+              : await listTrendingChannelsPage({ filter, page, limit, signal: controller.signal });
+        } else {
+          paged =
+            type === 'group'
+              ? await listGroupsPage({ page, limit, signal: controller.signal })
+              : await listChannelsPage({ page, limit, signal: controller.signal });
+        }
+
+        if ((filter === 'trending' || filter === 'latest' || filter === 'hot') && !q) {
+          for (const x of paged.items ?? []) trendingIds.add(String(x?.id ?? ''));
+        }
+
+        const ui = (paged.items ?? []).map((x) => toUiItem(x, { trendingIds }));
         if (!cancelled) {
           setLinks(ui);
+          setMeta({
+            page: Number(paged.page) || 1,
+            totalPages: Number(paged.totalPages) || 1,
+            totalItems: typeof paged.totalItems === 'number' ? paged.totalItems : undefined,
+          });
           setLoading(false);
         }
       } catch (err) {
@@ -69,6 +88,7 @@ export function useLinks(options) {
         if (err?.name === 'AbortError') return;
         console.error(err);
         setLinks([]);
+        setMeta({ page: 1, totalPages: 1, totalItems: undefined });
         setLoading(false);
       }
     }
@@ -78,7 +98,7 @@ export function useLinks(options) {
       cancelled = true;
       controller.abort();
     };
-  }, [type, query, refreshToken]);
+  }, [type, query, filter, page, limit, refreshToken]);
 
-  return { items: links, loading };
+  return { items: links, loading, ...meta };
 }
