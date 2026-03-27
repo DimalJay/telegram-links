@@ -9,30 +9,88 @@ function useQuery() {
   return ctx?.query ?? '';
 }
 
+function sortLatest(items) {
+  return [...items].sort((a, b) => {
+    const at = Date.parse(String(a?.createdAt ?? ''));
+    const bt = Date.parse(String(b?.createdAt ?? ''));
+    return (Number.isFinite(bt) ? bt : 0) - (Number.isFinite(at) ? at : 0);
+  });
+}
+
+function sortBest(items) {
+  return [...items].sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? '')));
+}
+
 export function ChannelsPage() {
   const query = useQuery();
   const links = useLinks({ type: 'channel', query });
 
-  const trending = links.filter((x) => x.trending);
-  const all = links.filter((x) => !x.trending);
+  const [tab, setTab] = React.useState('trending');
+
+  const items =
+    tab === 'trending'
+      ? links.filter((x) => x.trending)
+      : tab === 'latest'
+        ? sortLatest(links)
+        : sortBest(links);
+
+  const title = tab === 'trending' ? 'Trending Channels' : tab === 'latest' ? 'Latest Channels' : 'Hot Channels';
 
   return (
-    <section className="grid gap-4 py-6 lg:grid-cols-2">
-      <Panel title="Trending Channels">
-        <div className="grid gap-3 sm:grid-cols-2" role="list">
-          {trending.length ? (
-            trending.map((x) => <LinkCard key={x.id} item={x} />)
-          ) : (
-            <p className="text-sm text-(--tg-muted)">No links yet.</p>
-          )}
-        </div>
-      </Panel>
+    <section className="py-6">
+      <div
+        className="inline-flex items-center gap-1 rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
+        role="tablist"
+        aria-label="Channels tabs"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'trending'}
+          className={
+            tab === 'trending'
+              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+          }
+          onClick={() => setTab('trending')}
+        >
+          Trending
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'latest'}
+          className={
+            tab === 'latest'
+              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+          }
+          onClick={() => setTab('latest')}
+        >
+          Latest
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'hot'}
+          className={
+            tab === 'hot'
+              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+          }
+          onClick={() => setTab('hot')}
+        >
+          Hot
+        </button>
+      </div>
 
-      <Panel title="All Channels">
-        <div className="grid gap-3 sm:grid-cols-2" role="list">
-          {all.length ? all.map((x) => <LinkCard key={x.id} item={x} />) : <p className="text-sm text-(--tg-muted)">No links yet.</p>}
-        </div>
-      </Panel>
+      <div className="mt-4">
+        <Panel title={title}>
+          <div className="grid gap-3 sm:grid-cols-2" role="list">
+            {items.length ? items.map((x) => <LinkCard key={x.id} item={x} />) : <p className="text-sm text-(--tg-muted)">No links yet.</p>}
+          </div>
+        </Panel>
+      </div>
     </section>
   );
 }

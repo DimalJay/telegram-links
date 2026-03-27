@@ -23,9 +23,7 @@ function sortBest(items) {
 
 export function HomePage() {
   const query = useQuery();
-  const [typeFilter, setTypeFilter] = React.useState('group');
-  const type = typeFilter === 'channel' ? 'channel' : 'group';
-  const links = useLinks({ query, type });
+  const links = useLinks({ query });
 
   const [tab, setTab] = React.useState('trending');
 
@@ -51,7 +49,7 @@ export function HomePage() {
 
   return (
     <section className="py-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-start">
         <div
           className="inline-flex items-center gap-1 rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
           role="tablist"
@@ -97,33 +95,16 @@ export function HomePage() {
             Hot
           </button>
         </div>
-
-        <label className="inline-flex w-full items-center justify-between gap-3 rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-3 sm:w-auto">
-          <span className="text-sm font-semibold text-(--tg-muted)">Type</span>
-          <select
-            className="w-full rounded-xl border border-(--tg-border) bg-(--tg-surface) px-3 py-2 text-sm text-(--tg-text) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--tg-primary) sm:w-auto"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            aria-label="Filter by type"
-          >
-            <option value="group">Groups</option>
-            <option value="channel">Channels</option>
-          </select>
-        </label>
       </div>
 
       <div className="mt-4">
-        {type === 'group' ? (
+        <div className="grid gap-4">
           <Panel title={groupsTitle}>
             <div className="grid gap-3 sm:grid-cols-3" role="list">
-              {groups.length ? (
-                groups.map((x) => <LinkCard key={x.id} item={x} />)
-              ) : (
-                <p className="text-sm text-(--tg-muted)">No links yet.</p>
-              )}
+              {groups.length ? groups.map((x) => <LinkCard key={x.id} item={x} />) : <p className="text-sm text-(--tg-muted)">No links yet.</p>}
             </div>
           </Panel>
-        ) : (
+
           <Panel title={channelsTitle}>
             <div className="grid gap-3 sm:grid-cols-3" role="list">
               {channels.length ? (
@@ -133,7 +114,7 @@ export function HomePage() {
               )}
             </div>
           </Panel>
-        )}
+        </div>
       </div>
     </section>
   );
