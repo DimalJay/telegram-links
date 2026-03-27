@@ -24,6 +24,32 @@ Pages:
 - Production build: `npm run build`
 - Preview build: `npm run preview`
 
+## Deploy (Firebase Hosting)
+
+This repo includes a `firebase.json` configured to serve the Vite build output in `dist/`.
+
+1) Install Firebase CLI:
+
+- `npm i -g firebase-tools`
+
+2) Login + select/create a Firebase project:
+
+- `firebase login`
+- `firebase init hosting` (choose this folder, set `dist` as the public directory, and do **not** enable GitHub deploy unless you want it)
+
+3) Set production API base URL (optional but recommended)
+
+Create `.env.production`:
+
+```bash
+VITE_API_BASE_URL=https://YOUR_BACKEND_HOST
+```
+
+4) Build + deploy:
+
+- `npm run build`
+- `firebase deploy` (or `firebase deploy --only hosting --project YOUR_PROJECT_ID`)
+
 ## Data + API
 
 All listings and submissions use the backend API (see the backend README for full details):
