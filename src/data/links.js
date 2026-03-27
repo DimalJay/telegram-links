@@ -94,13 +94,21 @@ export async function listChannels({ signal } = {}) {
   return Array.isArray(items) ? items : [];
 }
 
-export async function listTrendingGroups({ signal } = {}) {
-  const data = await apiGet('/api/trending/groups?page=1&limit=10', { signal });
+export async function listTrendingGroups({ filter, page = 1, limit = 10, signal } = {}) {
+  const sp = new URLSearchParams();
+  if (filter === 'trending' || filter === 'latest' || filter === 'hot') sp.set('filter', filter);
+  sp.set('page', String(page));
+  sp.set('limit', String(limit));
+  const data = await apiGet(`/api/trending/groups?${sp.toString()}`, { signal });
   return Array.isArray(data?.items) ? data.items : [];
 }
 
-export async function listTrendingChannels({ signal } = {}) {
-  const data = await apiGet('/api/trending/channels?page=1&limit=10', { signal });
+export async function listTrendingChannels({ filter, page = 1, limit = 10, signal } = {}) {
+  const sp = new URLSearchParams();
+  if (filter === 'trending' || filter === 'latest' || filter === 'hot') sp.set('filter', filter);
+  sp.set('page', String(page));
+  sp.set('limit', String(limit));
+  const data = await apiGet(`/api/trending/channels?${sp.toString()}`, { signal });
   return Array.isArray(data?.items) ? data.items : [];
 }
 

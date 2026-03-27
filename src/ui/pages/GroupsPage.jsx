@@ -38,50 +38,52 @@ export function GroupsPage() {
 
   return (
     <section className="py-6">
-      <div
-        className="inline-flex items-center gap-1 rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
-        role="tablist"
-        aria-label="Groups tabs"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'trending'}
-          className={
-            tab === 'trending'
-              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
-              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
-          }
-          onClick={() => setTab('trending')}
+      <div className="max-w-full overflow-x-auto">
+        <div
+          className="inline-flex items-center gap-1 whitespace-nowrap rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
+          role="tablist"
+          aria-label="Groups tabs"
         >
-          Trending
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'latest'}
-          className={
-            tab === 'latest'
-              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
-              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
-          }
-          onClick={() => setTab('latest')}
-        >
-          Latest
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'hot'}
-          className={
-            tab === 'hot'
-              ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
-              : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
-          }
-          onClick={() => setTab('hot')}
-        >
-          Hot
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'trending'}
+            className={
+              tab === 'trending'
+                ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+                : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+            }
+            onClick={() => setTab('trending')}
+          >
+            Trending
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'latest'}
+            className={
+              tab === 'latest'
+                ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+                : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+            }
+            onClick={() => setTab('latest')}
+          >
+            Latest
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'hot'}
+            className={
+              tab === 'hot'
+                ? 'rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text)'
+                : 'rounded-xl px-4 py-2 text-sm font-semibold text-(--tg-muted) hover:bg-(--tg-card-hover)'
+            }
+            onClick={() => setTab('hot')}
+          >
+            Hot
+          </button>
+        </div>
       </div>
 
       <div className="mt-4">

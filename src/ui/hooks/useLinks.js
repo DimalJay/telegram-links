@@ -33,8 +33,8 @@ export function useLinks(options) {
         const shouldFetchChannels = type !== 'group';
 
         const [trendingGroups, trendingChannels] = await Promise.all([
-          shouldFetchGroups ? listTrendingGroups({ signal: controller.signal }) : Promise.resolve([]),
-          shouldFetchChannels ? listTrendingChannels({ signal: controller.signal }) : Promise.resolve([]),
+          shouldFetchGroups ? listTrendingGroups({ filter: 'trending', limit: 10, signal: controller.signal }) : Promise.resolve([]),
+          shouldFetchChannels ? listTrendingChannels({ filter: 'trending', limit: 10, signal: controller.signal }) : Promise.resolve([]),
         ]);
 
         const trendingIds = new Set([

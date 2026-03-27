@@ -49,9 +49,9 @@ export function HomePage() {
 
   return (
     <section className="py-6">
-      <div className="flex items-center justify-start">
+      <div className="max-w-full overflow-x-auto">
         <div
-          className="inline-flex items-center gap-1 rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
+          className="inline-flex items-center gap-1 whitespace-nowrap rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
           role="tablist"
           aria-label="Home tabs"
         >
