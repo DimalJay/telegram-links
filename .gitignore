@@ -11,3 +11,5 @@ dist/
 .agents
 .firebase
 skills-lock.json
+
+deploy.bat

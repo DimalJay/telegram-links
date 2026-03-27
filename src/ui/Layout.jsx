@@ -21,11 +21,14 @@ export function Layout() {
 
   return (
     <div className="min-h-dvh">
-      <header className="border-b border-(--tg-border) bg-(--tg-surface) py-5">
+      <header className="border-b border-(--tg-border) bg-(--tg-surface) py-4 sm:py-5">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <NavLink className="text-2xl font-semibold tracking-tight text-(--tg-text) no-underline" to="/">
+              <NavLink
+                className="max-w-[min(70vw,16rem)] truncate text-xl font-semibold tracking-tight text-(--tg-text) no-underline sm:max-w-none sm:text-2xl"
+                to="/"
+              >
                 Top Telegram Links
               </NavLink>
               <nav className="flex items-center gap-3 text-sm">
@@ -37,13 +40,13 @@ export function Layout() {
                   Home
                 </NavLink>
                 <NavLink
-                  to="/groups.html"
+                  to="/groups"
                   className={isGroups ? 'font-semibold text-(--tg-text)' : 'text-(--tg-primary)'}
                 >
                   Groups
                 </NavLink>
                 <NavLink
-                  to="/channels.html"
+                  to="/channels"
                   className={isChannels ? 'font-semibold text-(--tg-text)' : 'text-(--tg-primary)'}
                 >
                   Channels

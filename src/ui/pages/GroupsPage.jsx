@@ -2,6 +2,7 @@ import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Panel } from '../components/Panel.jsx';
 import { LinkCard } from '../components/LinkCard.jsx';
+import { SkeletonCard } from '../components/SkeletonCard.jsx';
 import { useLinks } from '../hooks/useLinks.js';
 
 function useQuery() {
@@ -23,7 +24,7 @@ function sortBest(items) {
 
 export function GroupsPage() {
   const query = useQuery();
-  const links = useLinks({ type: 'group', query });
+  const { items: links, loading } = useLinks({ type: 'group', query });
 
   const [tab, setTab] = React.useState('trending');
 
@@ -36,8 +37,11 @@ export function GroupsPage() {
 
   const title = tab === 'trending' ? 'Trending Groups' : tab === 'latest' ? 'Latest Groups' : 'Hot Groups';
 
+  const placeholders = React.useMemo(() => Array.from({ length: 6 }, (_, i) => i), []);
+
   return (
     <section className="py-6">
+      <h1 className="sr-only">Telegram Groups</h1>
       <div className="max-w-full overflow-x-auto">
         <div
           className="inline-flex items-center gap-1 whitespace-nowrap rounded-2xl border border-(--tg-border) bg-(--tg-surface) p-1"
@@ -89,7 +93,13 @@ export function GroupsPage() {
       <div className="mt-4">
         <Panel title={title}>
           <div className="grid gap-3 sm:grid-cols-2" role="list">
-            {items.length ? items.map((x) => <LinkCard key={x.id} item={x} />) : <p className="text-sm text-(--tg-muted)">No links yet.</p>}
+            {loading ? (
+              placeholders.map((i) => <SkeletonCard key={`g-skel-${i}`} />)
+            ) : items.length ? (
+              items.map((x) => <LinkCard key={x.id} item={x} />)
+            ) : (
+              <p className="text-sm text-(--tg-muted)">No links yet.</p>
+            )}
           </div>
         </Panel>
       </div>

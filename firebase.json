@@ -6,7 +6,70 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/index.html",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/groups.html",
+        "destination": "/groups",
+        "type": 301
+      },
+      {
+        "source": "/channels.html",
+        "destination": "/channels",
+        "type": 301
+      }
+    ],
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=31536000,immutable"
+          }
+        ]
+      },
+      {
+        "source": "/robots.txt",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "/sitemap.xml",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "/site.webmanifest",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=86400"
+          }
+        ]
+      }
+    ],
     "rewrites": [
+      {
+        "source": "/groups",
+        "destination": "/groups.html"
+      },
+      {
+        "source": "/channels",
+        "destination": "/channels.html"
+      },
       {
         "source": "**",
         "destination": "/index.html"

@@ -13,6 +13,7 @@ export function useLinks(options) {
   const query = options?.query;
 
   const [links, setLinks] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const [refreshToken, setRefreshToken] = React.useState(0);
 
   React.useEffect(() => {
@@ -27,6 +28,7 @@ export function useLinks(options) {
 
     async function load() {
       try {
+        setLoading(true);
         const q = String(query ?? '').trim();
 
         const shouldFetchGroups = type !== 'channel';
@@ -58,12 +60,16 @@ export function useLinks(options) {
         }
 
         const ui = items.map((x) => toUiItem(x, { trendingIds }));
-        if (!cancelled) setLinks(ui);
+        if (!cancelled) {
+          setLinks(ui);
+          setLoading(false);
+        }
       } catch (err) {
         if (cancelled) return;
         if (err?.name === 'AbortError') return;
         console.error(err);
         setLinks([]);
+        setLoading(false);
       }
     }
 
@@ -74,5 +80,5 @@ export function useLinks(options) {
     };
   }, [type, query, refreshToken]);
 
-  return links;
+  return { items: links, loading };
 }
