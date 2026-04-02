@@ -29,8 +29,8 @@ jobs:
       - name: Build and generate SEO pages
         run: npm run build
         env:
-          VITE_API_BASE_URL: https://telegram-links-backend-three.vercel.app
-          VITE_SITE_URL: https://top-telegram-links.web.app
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
 
       - name: Deploy to Firebase
         run: npx firebase-tools deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
