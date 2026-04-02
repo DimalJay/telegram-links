@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage.jsx';
 import { GroupsPage } from './pages/GroupsPage.jsx';
 import { ChannelsPage } from './pages/ChannelsPage.jsx';
 import { ItemDetailsPage } from './pages/ItemDetailsPage.jsx';
+import { FaqPage } from './pages/FaqPage.jsx';
 
 export function App() {
   return (
@@ -17,6 +18,8 @@ export function App() {
         <Route path="/channels.html" element={<ChannelsPage />} />
         <Route path="/group/:id" element={<ItemDetailsPage type="group" />} />
         <Route path="/channel/:id" element={<ItemDetailsPage type="channel" />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/faq.html" element={<FaqPage />} />
       </Route>
     </Routes>
   );

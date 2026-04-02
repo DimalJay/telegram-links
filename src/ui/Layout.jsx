@@ -11,6 +11,7 @@ export function Layout() {
   const isHome = location.pathname === '/' || location.pathname === '/index.html';
   const isGroups = location.pathname.startsWith('/groups');
   const isChannels = location.pathname.startsWith('/channels');
+  const isFaq = location.pathname.startsWith('/faq');
 
   // Keep the last search query across pages.
   React.useEffect(() => {
@@ -50,6 +51,12 @@ export function Layout() {
                   className={isChannels ? 'font-semibold text-(--tg-text)' : 'text-(--tg-primary)'}
                 >
                   Channels
+                </NavLink>
+                <NavLink
+                  to="/faq"
+                  className={isFaq ? 'font-semibold text-(--tg-text)' : 'text-(--tg-primary)'}
+                >
+                  FAQ
                 </NavLink>
               </nav>
             </div>

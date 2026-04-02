@@ -65,7 +65,8 @@ async function run() {
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     `  <url><loc>${SITE_URL}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
     `  <url><loc>${SITE_URL}/groups</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`,
-    `  <url><loc>${SITE_URL}/channels</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`
+    `  <url><loc>${SITE_URL}/channels</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`,
+    `  <url><loc>${SITE_URL}/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`
   ];
 
   let rssLines = [
@@ -110,6 +111,28 @@ async function run() {
       `    <guid>${SITE_URL}/${item.type}/${item.id}</guid>`,
       '  </item>'
     );
+  }
+
+  // Pre-render /faq page
+  {
+    const faqTitle = 'Telegram FAQ – Groups, Channels, Bots & Safety Questions Answered';
+    const faqDesc = 'Find answers to the most frequently asked questions about Telegram: how to join groups and channels, what bots do, Telegram vs WhatsApp, and more.';
+    const faqUrl = `${SITE_URL}/faq`;
+    const faqMeta = `
+    <title>${faqTitle}</title>
+    <meta name="description" content="${faqDesc}" />
+    <meta property="og:title" content="${faqTitle}" />
+    <meta property="og:description" content="${faqDesc}" />
+    <meta property="og:url" content="${faqUrl}" />
+    <meta name="twitter:title" content="${faqTitle}" />
+    <meta name="twitter:description" content="${faqDesc}" />
+    <link rel="canonical" href="${faqUrl}" />
+  `;
+    const faqDir = path.join(distPath, 'faq');
+    fs.mkdirSync(faqDir, { recursive: true });
+    const faqHtml = indexHtml.replace('</head>', `${faqMeta}</head>`);
+    fs.writeFileSync(path.join(faqDir, 'index.html'), faqHtml, 'utf-8');
+    console.log('Generated HTML for /faq page');
   }
 
   sitemapLines.push('</urlset>');
