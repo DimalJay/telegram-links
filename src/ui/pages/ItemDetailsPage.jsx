@@ -121,7 +121,7 @@ export function ItemDetailsPage({ type }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Join {item.kind === 'channel' ? 'Channel' : 'Group'} &nearr;
+                Join {item.kind === 'channel' ? 'Channel' : 'Group'} ↗
               </a>
             </div>
 
