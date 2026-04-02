@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAdultGate } from '../hooks/useAdultGate.js';
 
 export function LinkCard({ item }) {
@@ -25,7 +26,9 @@ export function LinkCard({ item }) {
         ) : null}
 
         <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
+          <Link to={`/${item.kind === 'channel' ? 'channel' : 'group'}/${item.id}`} className="hover:underline focus:outline-none">
+            <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
+          </Link>
 
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-full border border-(--tg-border) px-2 py-0.5 text-(--tg-muted)">{item.kind}</span>
@@ -44,6 +47,12 @@ export function LinkCard({ item }) {
           <p className="mt-2 text-sm text-(--tg-muted) wrap-break-word">{item.description ? item.description : item.url}</p>
 
           <div className="mt-3 flex gap-2">
+            <Link
+              to={`/${item.kind === 'channel' ? 'channel' : 'group'}/${item.id}`}
+              className="inline-flex items-center justify-center rounded-xl bg-(--tg-card-hover) px-4 py-2 text-sm font-semibold text-(--tg-text) shadow-sm hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--tg-border)"
+            >
+              Details
+            </Link>
             <a
               className="inline-flex items-center justify-center rounded-xl bg-(--tg-primary) px-4 py-2 text-sm font-semibold text-(--tg-primary-contrast) shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--tg-primary)"
               href={item.url}
