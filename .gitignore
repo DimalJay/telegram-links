@@ -5,6 +5,7 @@ dist/
 .env.production
 .env.development
 .env.local
+.env
 !.env.example
 
 .claude
