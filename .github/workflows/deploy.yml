@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # Runs at minute 0 past every 12th hour (e.g. 12:00 AM, 12:00 PM)
-    - cron: '0 */12 * * *'
+    # Runs daily at midnight (every 24 hours)
+    - cron: '0 0 * * *'
   repository_dispatch:
     types: [rebuild_seo]
   workflow_dispatch:
@@ -37,3 +37,9 @@ jobs:
         
       - name: Notify IndexNow
         run: npm run indexnow
+
+      - name: Setup Google Credentials
+        run: echo '${{ secrets.GOOGLE_INDEXING_CREDENTIALS }}' > top-telegram-links-0ff5b28cd97a.json
+
+      - name: Notify Google Indexing API
+        run: npm run google-index      
